@@ -1,0 +1,147 @@
+import sqlite3
+conn =sqlite3.connect("stp18online.db")
+c=conn.cursor()
+try:
+    c.execute("create table login (Lid varchar(225)PRIMARY KEY , password varchar(225))")
+    c.execute("create table studetail (rollno varchar(225)PRIMARY KEY, name varchar(225), dept varchar(225), sem  varchar(225), batch varchar(225), password varchar(225))")
+    c.execute("create table empdetail (empid varchar(225) PRIMARY KEY, name varchar(225), dept varchar(225), salary varchar(225), password varchar(225))")
+    print""
+except Exception, e:
+    print e
+finally:
+    c.close()
+    conn.close()
+    print "--------------------------------------------------------"
+print"             "
+print "          WELCOME TO LIBRARY MANAGEMENT SYSTEM"
+print "            "
+print "--------------------------------------------------------"
+print""
+print""
+print"*****COLLAGE LIBRARY PANEL*******"
+print"select from the given option"
+print"1. LOGIN"
+print"2. REGISTER NEW STUDENT"
+print"3. EXIT"
+print""
+def login():
+    class student:
+        def view_book(self):
+            print"------------VIEW BOOK HERE------------------"
+            c.execute("select * from books")
+            print c.fetchall()
+
+        def search(self):
+            print"--------------SEARCH BOOK HERE----------------"
+            sub = raw_input("enter book id which you want to search")
+            c.execute('''select * from books where subject=?''', (sub,))
+            print c.fetchall()
+
+    st = student()
+    class employee:
+        def add_book(self):
+            print"-----------ADD NEW BOOK HERE--------------"
+            bid=raw_input("Entr book id:")
+            title=raw_input("enter title:")
+            subject=raw_input("enter subject:")
+            author=raw_input("enter author")
+            avail= 'available'
+            c.execute("insert into books values ('%s','%s','%s','%s','%s')" % (bid, title, subject, author,avail ))
+            conn.commit()
+        def delete_book(self):
+            print"------------Delete book here-------------"
+            b_id=raw_input("Enter the book id you want to delete:")
+            c.execute('''delete from books where bid=?''',(b_id))
+    ep = employee()
+
+
+    conn = sqlite3.connect("stp18online.db")
+    c = conn.cursor()
+    try:
+        id = raw_input("enter id")
+        pwd = raw_input("enter password")
+        if c.execute('''select * from empdetail where empid=? and password=?''', (id,pwd,)):
+            print "SUCCESSFULLY LOGINED"
+            print""
+            print""
+            select=input("IF YOU ARE A STUDENT PRESS 1 OR PRESS 2")
+            if select==1:
+                print"____________________________________________________________________________________________________________________"
+                print("WELCOME TO THE STUDENT MENU")
+                while True:
+                    print""
+                    print "1.View book"
+                    print "2. Search book"
+                    print "3. Exit"
+                    print""
+                    ch=input("ENTER YOUR CHOICE:   ")
+                    if ch==1:
+                        st.view_book()
+                    elif ch==2:
+                        st.search()
+                    else:
+                        exit()
+            else:
+                print"______________________________________________________________________________________________________________________"
+                print("WELCOME TO EMPLOYEE MENU")
+                while True:
+                    print"1. Add book."
+                    print"2. Delete book"
+                    print"3. exit"
+                    chh=input("ENTER YOUR CHOICE:")
+                    if chh==1:
+                        ep.add_book()
+                    elif chh==2:
+                        ep.delete_book()
+                    else:
+                        exit()
+        else:
+            print "INVALID USERNAME/PASSWORD"
+            print "*****Register youself first!!!!***********"
+            register()
+    except Exception, e:
+        print "error", e
+    finally:
+        c.close()
+        conn.close()
+
+def register():
+    conn = sqlite3.connect("stp18online.db")
+    c = conn.cursor()
+    try:
+        print""
+        identification = input("Press 1 FOR EMPLOYEE registration / Press 2 for STUDENT registration")
+        if identification == 1:
+            empid = input("enter your id:")
+            name = raw_input("enter your name:")
+            dept = raw_input("enter your department name:")
+            salary = input("enter your salary:")
+            password = raw_input("create your password:")
+            c.execute("insert into empdetail values ('%s','%s','%s','%s','%s')" %(empid, name, dept, salary, password))
+            conn.commit()
+            print "#########REGISTRATION DONE#############"
+        else:
+            rollno = input("enter your rollno:")
+            name = raw_input("enter your name:")
+            dept = raw_input("enter your department name:")
+            sem = input("enter your sem:")
+            batch = input("enter your batch:")
+            password = raw_input("create your password:")
+            c.execute("insert into studetail values ('%s','%s','%s','%s','%s','%s')" %(rollno, name, dept, sem, batch, password))
+            conn.commit()
+            print "#########REGISTRATION DONE############"
+        print"login again"
+        login()
+    except Exception, e:
+        print e
+    finally:
+        c.close()
+        conn.close()
+
+choice = input("Enter your choice")
+if choice == 1:
+    login()
+elif choice == 2:
+    register()
+else:
+    exit()
